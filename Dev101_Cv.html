@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern CV Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800">Modern CV Builder</h1>
+                <button
+                    onclick="generatePDF()"
+                    class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download PDF
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Form Section -->
+                <div class="space-y-6">
+                    <div class="w-full p-6 bg-white rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">Personal Information</h2>
+                        
+                        <!-- Profile Picture -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+                            <div class="flex items-center space-x-4">
+                                <div id="imagePreview" class="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border-2 border-gray-200">
+                                    <img id="profileImage" src="" alt="" class="w-full h-full object-cover hidden">
+                                </div>
+                                <input
+                                    type="file"
+                                    id="imageInput"
+                                    accept="image/*"
+                                    class="hidden"
+                                    onchange="handleImageUpload(event)"
+                                >
+                                <button
+                                    onclick="document.getElementById('imageInput').click()"
+                                    class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-gray-700 font-medium"
+                                >
+                                    Choose Image
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <input
+                                id="fullName"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Full Name"
+                                oninput="updatePreview()"
+                            />
+                            <input
+                                id="title"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Professional Title"
+                                oninput="updatePreview()"
+                            />
+                            <input
+                                id="email"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                type="email"
+                                placeholder="Email"
+                                oninput="updatePreview()"
+                            />
+                            <input
+                                id="phone"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Phone"
+                                oninput="updatePreview()"
+                            />
+                            <input
+                                id="location"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Location"
+                                oninput="updatePreview()"
+                            />
+                            <textarea
+                                id="summary"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Professional Summary"
+                                rows="4"
+                                oninput="updatePreview()"
+                            ></textarea>
+                            <textarea
+                                id="bio"
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Biography"
+                                rows="4"
+                                oninput="updatePreview()"
+                            ></textarea>
+                        </div>
+
+                        <h2 class="text-2xl font-bold mt-8 mb-6 text-gray-800">Experience</h2>
+                        <div id="experienceList" class="space-y-4"></div>
+                        <button
+                            onclick="addExperience()"
+                            class="flex items-center gap-2 text-blue-600 mt-4 font-medium"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Experience
+                        </button>
+
+                        <h2 class="text-2xl font-bold mt-8 mb-6 text-gray-800">Education</h2>
+                        <div id="educationList" class="space-y-4"></div>
+                        <button
+                            onclick="addEducation()"
+                            class="flex items-center gap-2 text-blue-600 mt-4 font-medium"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Education
+                        </button>
+
+                        <h2 class="text-2xl font-bold mt-8 mb-6 text-gray-800">Skills</h2>
+                        <div id="skillsList" class="flex flex-wrap gap-2 mb-4"></div>
+                        <div class="flex gap-2">
+                            <input
+                                id="skillInput"
+                                class="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Add a skill"
+                            />
+                            <button
+                                onclick="addSkill()"
+                                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                Add
+                            </button>
+                        </div>
+
+                        <h2 class="text-2xl font-bold mt-8 mb-6 text-gray-800">Languages</h2>
+                        <div id="languagesList" class="space-y-4"></div>
+                        <button
+                            onclick="addLanguage()"
+                            class="flex items-center gap-2 text-blue-600 mt-4 font-medium"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Language
+                        </button>
+
+                        <h2 class="text-2xl font-bold mt-8 mb-6 text-gray-800">Certificates</h2>
+                        <div id="certificatesList" class="space-y-4"></div>
+                        <button
+                            onclick="addCertificate()"
+                            class="flex items-center gap-2 text-blue-600 mt-4 font-medium"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Certificate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="space-y-6">
+                    <div id="cv-preview" class="w-full bg-white rounded-xl shadow-lg overflow-hidden">
+                        <!-- Left Sidebar -->
+                        <div class="flex">
+                            <div class="w-1/3 bg-gray-900 text-white p-8">
+                                <div id="previewImage" class="w-32 h-32 mx-auto bg-gray-800 rounded-full overflow-hidden mb-6 hidden">
+                                    <img id="previewProfileImage" src="" alt="" class="w-full h-full object-cover">
+                                </div>
+                                
+                                <div class="space-y-6">
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3 text-gray-300">Contact</h3>
+                                        <div class="space-y-2 text-sm">
+                                            <div id="previewEmail" class="flex items-center gap-2"></div>
+                                            <div id="previewPhone" class="flex items-center gap-2"></div>
+                                            <div id="previewLocation" class="flex items-center gap-2"></div>
+                                        </div>
+                                    </div>
+
+                                    <div id="previewSkills" class="hidden">
+                                        <h3 class="text-lg font-semibold mb-3 text-gray-300">Skills</h3>
+                                        <div class="flex flex-wrap gap-2"></div>
+                                    </div>
+
+                                    <div id="previewLanguages" class="hidden">
+                                        <h3 class="text-lg font-semibold mb-3 text-gray-300">Languages</h3>
+                                        <div class="space-y-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="w-2/3 p-8">
+                                <div class="mb-8">
+                                    <h1 id="previewName" class="text-3xl font-bold text-gray-800"></h1>
+                                    <p id="previewTitle" class="text-xl text-blue-600 mt-1"></p>
+                                </div>
+
+                                <div id="previewSummary" class="mb-8 hidden">
+                                    <h2 class="text-xl font-bold text-gray-800 mb-3">About</h2>
+                                    <p class="text-gray-600 leading-relaxed"></p>
+                                </div>
+
+                                <div id="previewBio" class="mb-8 hidden">
+                                    <h2 class="text-xl font-bold text-gray-800 mb-3">Biography</h2>
+                                    <p class="text-gray-600 leading-relaxed"></p>
+                                </div>
+
+                                <div id="previewExperience" class="mb-8 hidden">
+                                    <h2 class="text-xl font-bold text-gray-800 mb-4">Experience</h2>
+                                    <div class="space-y-6"></div>
+                                </div>
+
+                                <div id="previewEducation" class="hidden">
+                                    <h2 class="text-xl font-bold text-gray-800 mb-4">Education</h2>
+                                    <div class="space-y-4"></div>
+                                </div>
+
+                                <div id="previewCertificates" class="hidden">
+                                    <h2 class="text-xl font-bold text-gray-800 mb-4">Certificates</h2>
+                                    <div class="space-y-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let experienceCount = 0;
+        let educationCount = 0;
+        let skills = [];
+        let languageCount = 0;
+        let certificateCount = 0;
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                    document.getElementById('profileImage').classList.remove('hidden');
+                    document.getElementById('previewProfileImage').src = e.target.result;
+                    document.getElementById('previewImage').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addExperience() {
+            const id = experienceCount++;
+            const html = `
+                <div id="experience-${id}" class="p-4 border border-gray-200 rounded-lg">
+                    <div class="flex justify-end">
+                        <button onclick="removeExperience(${id})" class="text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Company"
+                            oninput="updatePreview()"
+                        />
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Position"
+                            oninput="updatePreview()"
+                        />
+                        <div class="grid grid-cols-2 gap-4">
+                            <input
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                type="month"
+                                placeholder="Start Date"
+                                oninput="updatePreview()"
+                            />
+                            <input
+                                class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                type="month"
+                                placeholder="End Date"
+                                oninput="updatePreview()"
+                            />
+                        </div>
+                        <textarea
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Description"
+                            rows="3"
+                            oninput="updatePreview()"
+                        ></textarea>
+                    </div>
+                </div>
+            `;
+            document.getElementById('experienceList').insertAdjacentHTML('beforeend', html);
+            updatePreview();
+        }
+
+        function addEducation() {
+            const id = educationCount++;
+            const html = `
+                <div id="education-${id}" class="p-4 border border-gray-200 rounded-lg">
+                    <div class="flex justify-end">
+                        <button onclick="removeEducation(${id})" class="text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Institution"
+                            oninput="updatePreview()"
+                        />
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:-ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Degree"
+                            oninput="updatePreview()"
+                        />
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Field of Study"
+                            oninput="updatePreview()"
+                        />
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            type="month"
+                            placeholder="Graduation Date"
+                            oninput="updatePreview()"
+                        />
+                    </div>
+                </div>
+            `;
+            document.getElementById('educationList').insertAdjacentHTML('beforeend', html);
+            updatePreview();
+        }
+
+        function addSkill() {
+            const skillInput = document.getElementById('skillInput');
+            const skill = skillInput.value.trim();
+            if (skill && !skills.includes(skill)) {
+                skills.push(skill);
+                updateSkillsList();
+                skillInput.value = '';
+                updatePreview();
+            }
+        }
+
+        function updateSkillsList() {
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = skills.map(skill => `
+                <div class="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg">
+                    <span>${skill}</span>
+                    <button onclick="removeSkill('${skill}')" class="text-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"/>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeExperience(id) {
+            document.getElementById(`experience-${id}`).remove();
+            updatePreview();
+        }
+
+        function removeEducation(id) {
+            document.getElementById(`education-${id}`).remove();
+            updatePreview();
+        }
+
+        function removeSkill(skill) {
+            skills = skills.filter(s => s !== skill);
+            updateSkillsList();
+            updatePreview();
+        }
+
+        function addLanguage() {
+            const id = languageCount++;
+            const html = `
+                <div id="language-${id}" class="p-4 border border-gray-200 rounded-lg">
+                    <div class="flex justify-end">
+                        <button onclick="removeLanguage(${id})" class="text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Language"
+                            oninput="updatePreview()"
+                        />
+                        <select
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Proficiency Level"
+                            oninput="updatePreview()"
+                        >
+                            <option value="">Proficiency Level</option>
+                            <option value="Native">Native</option>
+                            <option value="Fluent">Fluent</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Beginner">Beginner</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            document.getElementById('languagesList').insertAdjacentHTML('beforeend', html);
+            updatePreview();
+        }
+
+        function removeLanguage(id) {
+            document.getElementById(`language-${id}`).remove();
+            updatePreview();
+        }
+
+        function addCertificate() {
+            const id = certificateCount++;
+            const html = `
+                <div id="certificate-${id}" class="p-4 border border-gray-200 rounded-lg">
+                    <div class="flex justify-end">
+                        <button onclick="removeCertificate(${id})" class="text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Certificate Name"
+                            oninput="updatePreview()"
+                        />
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Issuing Organization"
+                            oninput="updatePreview()"
+                        />
+                        <input
+                            class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            type="year"
+                            placeholder="Year Obtained"
+                            oninput="updatePreview()"
+                        />
+                    </div>
+                </div>
+            `;
+            document.getElementById('certificatesList').insertAdjacentHTML('beforeend', html);
+            updatePreview();
+        }
+
+        function removeCertificate(id) {
+            document.getElementById(`certificate-${id}`).remove();
+            updatePreview();
+        }
+
+        function updatePreview() {
+            // Personal Info
+            document.getElementById('previewName').textContent = document.getElementById('fullName').value;
+            document.getElementById('previewTitle').textContent = document.getElementById('title').value;
+            
+            // Contact Info
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+
+            document.getElementById('previewEmail').innerHTML = email ? `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>${email}</span>
+            ` : '';
+
+            document.getElementById('previewPhone').innerHTML = phone ? `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>${phone}</span>
+            ` : '';
+
+            document.getElementById('previewLocation').innerHTML = location ? `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>${location}</span>
+            ` : '';
+
+            // Summary
+            const summary = document.getElementById('summary').value;
+            const previewSummary = document.getElementById('previewSummary');
+            if (summary) {
+                previewSummary.classList.remove('hidden');
+                previewSummary.querySelector('p').textContent = summary;
+            } else {
+                previewSummary.classList.add('hidden');
+            }
+
+            // Bio
+            const bio = document.getElementById('bio').value;
+            const previewBio = document.getElementById('previewBio');
+            if (bio) {
+                previewBio.classList.remove('hidden');
+                previewBio.querySelector('p').textContent = bio;
+            } else {
+                previewBio.classList.add('hidden');
+            }
+
+            // Experience
+            const experiences = Array.from(document.getElementById('experienceList').children);
+            const previewExperience = document.getElementById('previewExperience');
+            if (experiences.length > 0) {
+                previewExperience.classList.remove('hidden');
+                previewExperience.querySelector('div').innerHTML = experiences.map(exp => {
+                    const inputs = exp.querySelectorAll('input, textarea');
+                    return `
+                        <div class="border-l-2 border-gray-200 pl-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">${inputs[1].value}</h3>
+                                    <p class="text-blue-600">${inputs[0].value}</p>
+                                </div>
+                                <p class="text-gray-600 text-sm">
+                                    ${inputs[2].value} - ${inputs[3].value || 'Present'}
+                                </p>
+                            </div>
+                            <p class="mt-2 text-gray-600 leading-relaxed">${inputs[4].value}</p>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                previewExperience.classList.add('hidden');
+            }
+
+            // Education
+            const education = Array.from(document.getElementById('educationList').children);
+            const previewEducation = document.getElementById('previewEducation');
+            if (education.length > 0) {
+                previewEducation.classList.remove('hidden');
+                previewEducation.querySelector('div').innerHTML = education.map(edu => {
+                    const inputs = edu.querySelectorAll('input');
+                    return `
+                        <div class="border-l-2 border-gray-200 pl-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">${inputs[1].value} in ${inputs[2].value}</h3>
+                                    <p class="text-blue-600">${inputs[0].value}</p>
+                                </div>
+                                <p class="text-gray-600 text-sm">${inputs[3].value}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                previewEducation.classList.add('hidden');
+            }
+
+            // Skills
+            const previewSkills = document.getElementById('previewSkills');
+            if (skills.length > 0) {
+                previewSkills.classList.remove('hidden');
+                previewSkills.querySelector('div').innerHTML = skills.map(skill => `
+                    <span class="inline-block bg-gray-800 text-white px-3 py-1 rounded-full text-sm mb-2">${skill}</span>
+                `).join('');
+            } else {
+                previewSkills.classList.add('hidden');
+            }
+
+            // Languages
+            const languages = Array.from(document.getElementById('languagesList').children);
+            const previewLanguages = document.getElementById('previewLanguages');
+            if (languages.length > 0) {
+                previewLanguages.classList.remove('hidden');
+                previewLanguages.querySelector('div').innerHTML = languages.map(lang => {
+                    const inputs = lang.querySelectorAll('input, select');
+                    return `<p>${inputs[0].value} - ${inputs[1].value}</p>`;
+                }).join('');
+            } else {
+                previewLanguages.classList.add('hidden');
+            }
+
+            // Certificates
+            const certificates = Array.from(document.getElementById('certificatesList').children);
+            const previewCertificates = document.getElementById('previewCertificates');
+            if (certificates.length > 0) {
+                previewCertificates.classList.remove('hidden');
+                previewCertificates.querySelector('div').innerHTML = certificates.map(cert => {
+                    const inputs = cert.querySelectorAll('input');
+                    return `
+                        <div class="border-l-2 border-gray-200 pl-4">
+                            <h3 class="text-lg font-semibold text-gray-800">${inputs[0].value}</h3>
+                            <p class="text-blue-600">${inputs[1].value}</p>
+                            <p class="text-gray-600 text-sm">${inputs[2].value}</p>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                previewCertificates.classList.add('hidden');
+            }
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('cv-preview');
+            const opt = {
+                margin: 0.5,
+                filename: 'cv.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
